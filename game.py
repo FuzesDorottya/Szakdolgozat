@@ -14,6 +14,7 @@ class Game:
             "flowers": images("tiles/decor/flowers"),
             "large_decor": images("tiles/decor/large_decors"),
             "spikes": images("tiles/spikes"),
+            "player": image("tiles/character_spawn/1.png")
         }
 
     def run(self):
