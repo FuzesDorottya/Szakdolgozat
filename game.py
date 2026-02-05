@@ -1,11 +1,20 @@
 import sys
 import pygame
 
+from scripts.utilities import image, images
+
 class Game:
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode((800, 600))
         self.clock = pygame.time.Clock()
+
+        self.imgs = {
+            "dirt": images("tiles/dirt"),
+            "flowers": images("tiles/decor/flowers"),
+            "large_decor": images("tiles/decor/large_decors"),
+            "spikes": images("tiles/spikes"),
+        }
 
     def run(self):
         self.running = True
