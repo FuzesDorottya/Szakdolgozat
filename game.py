@@ -4,6 +4,7 @@ import pygame
 from scripts.utilities import image, images, Animation
 from scripts.tilemap import Tilemap
 from scripts.character_physics import Player
+from scripts.clouds import Clouds
 
 class Game:
     def __init__(self):
@@ -26,6 +27,7 @@ class Game:
             "player/jump": Animation(images("characters/player/jump"), duration=10)
         }
 
+        self.clouds = Clouds(image("clouds/0.png"), count=8)
         self.tilemap = Tilemap(self)
         self.player = Player(self, (0,0), (11, 11))
         self.load_map("00")
@@ -41,7 +43,8 @@ class Game:
         self.running = True
         while self.running:
 
-            self.display.fill((0, 0, 255))
+            bgr = image("bgr.png")
+            self.display.blit(pygame.transform.scale(bgr, self.display.get_size()), (0, 0))
             
             if self.dead:
                 self.load_map("00")
@@ -54,6 +57,8 @@ class Game:
             self.offset[1] += (character_rect.centery - self.display.get_height() / 2 - self.offset[1]) / 15
             render_offset = (int(self.offset[0]), int(self.offset[1]))
 
+            self.clouds.update()
+            self.clouds.render(self.display, render_offset)
             self.tilemap.render(self.display, render_offset)
             
             if not self.dead:
