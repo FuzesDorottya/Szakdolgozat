@@ -1,5 +1,6 @@
 import sys
 import pygame
+import os
 
 from scripts.utilities import image, images, Animation
 from scripts.tilemap import Tilemap
@@ -7,7 +8,7 @@ from scripts.character_physics import Player
 from scripts.clouds import Clouds
 
 class Game:
-    def __init__(self):
+    def __init__(self, start_level = 0):
         pygame.init()
         self.screen = pygame.display.set_mode((0, 0))
         self.screen_size = self.screen.get_size()
@@ -22,6 +23,7 @@ class Game:
             "large_decor": images("tiles/decor/large_decors"),
             "spikes": images("tiles/spikes"),
             "character_spawn": images("tiles/character_spawn"),
+            "finish": images("tiles/finish"),
             "player/idle": Animation(images("characters/player/idle"), duration=6),
             "player/run": Animation(images("characters/player/run"), duration=5),
             "player/jump": Animation(images("characters/player/jump"), duration=10)
@@ -31,7 +33,9 @@ class Game:
         self.clouds_far = Clouds(image("clouds/1.png"), type = 1, count=3)
         self.tilemap = Tilemap(self)
         self.player = Player(self, (0,0), (11, 11))
-        self.load_map("00")
+
+        self.level = start_level
+        self.load_map(self.level)
 
     def load_map(self, map):
         self.tilemap.load(f"assets/maps/{map}.json")
@@ -39,6 +43,7 @@ class Game:
         self.player.air_time = 0
         self.offset = [0, 0]
         self.dead = False
+        self.finish = False
     
     def run(self):
         self.running = True
@@ -47,8 +52,15 @@ class Game:
             bgr = image("bgr.png")
             self.display.blit(pygame.transform.scale(bgr, self.display.get_size()), (0, 0))
             
+            if self.finish:
+                if self.level < len(os.listdir("assets/maps")) - 1:
+                    self.level += 1
+                    self.load_map(self.level)
+                else:
+                    return
+            
             if self.dead:
-                self.load_map("00")
+                self.load_map(self.level)
             
             character_rect = pygame.Rect(self.player.position[0], 
                                          self.player.position[1], 

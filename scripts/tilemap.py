@@ -35,6 +35,16 @@ class Tilemap:
                                          self.tile_size))
         return rects
     
+    def finish_tile(self):
+        finish_tile = []
+        for location in self.tilemap:
+            tile = self.tilemap[location]
+            if tile["type"] == "finish":
+                finish_tile.append(pygame.Rect(tile["position"][0] * self.tile_size,
+                                              tile["position"][1] * self.tile_size,
+                                              self.tile_size * 2, self.tile_size * 2))
+        return finish_tile
+  
     def neighbouring_spikes(self, position): 
         spikes = []
         for tile in self.neighbouring_tiles(position): 

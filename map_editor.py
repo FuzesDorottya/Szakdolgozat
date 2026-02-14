@@ -20,13 +20,14 @@ class Editor:
             "flowers": images("tiles/decor/flowers"),
             "large_decor": images("tiles/decor/large_decors"),
             "spikes": images("tiles/spikes"),
-            "character_spawn": images("tiles/character_spawn")
+            "character_spawn": images("tiles/character_spawn"),
+            "finish": images("tiles/finish")
         }
         
         self.tilemap = Tilemap(self)
         
         try:
-            self.tilemap.load("assets/maps/00.json")
+            self.tilemap.load("assets/maps/10.json")
         except FileNotFoundError:
             pass
         
@@ -118,7 +119,7 @@ class Editor:
                     if event.key == pygame.K_g:
                         self.ongrid = not self.ongrid
                     if event.key == pygame.K_s:
-                        self.tilemap.save("assets/maps/00.json")
+                        self.tilemap.save("assets/maps/10.json")
                     if event.key == pygame.K_1:
                         self.type = 0
                         self.variant = 0
@@ -133,6 +134,9 @@ class Editor:
                         self.variant = 0
                     if event.key == pygame.K_5:
                         self.type = 4
+                        self.variant = 0
+                    if event.key == pygame.K_6:
+                        self.type = 5
                         self.variant = 0
                     if event.key == pygame.K_ESCAPE:
                         pygame.quit()

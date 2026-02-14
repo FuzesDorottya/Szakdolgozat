@@ -101,6 +101,14 @@ class Player(Physics):
             image = pygame.transform.flip(image, True, False)
         self.mask = pygame.mask.from_surface(image)
 
+        character_rect = pygame.Rect(self.position[0], 
+                           self.position[1], 
+                           self.character_size[0], 
+                           self.character_size[1])
+        for rect in tilemap.finish_tile():
+            if character_rect.colliderect(rect): 
+                self.game.finish = True
+
     def jump(self):
         if self.air_time < 4:
             if self.jumps > 0:
