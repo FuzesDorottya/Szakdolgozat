@@ -28,7 +28,7 @@ class Game:
             "player/run": Animation(images("characters/player/run"), duration=5),
             "player/jump": Animation(images("characters/player/jump"), duration=10)
         }
-
+        
         self.clouds_close = Clouds(image("clouds/0.png"), type = 0, count=4)
         self.clouds_far = Clouds(image("clouds/1.png"), type = 1, count=3)
         self.tilemap = Tilemap(self)
@@ -47,10 +47,9 @@ class Game:
     
     def run(self):
         self.running = True
+        bgr = pygame.transform.scale(image("background/bgr_game.png"), self.display.get_size())
         while self.running:
-
-            bgr = image("bgr.png")
-            self.display.blit(pygame.transform.scale(bgr, self.display.get_size()), (0, 0))
+            self.display.blit(bgr, (0, 0))
             
             if self.finish:
                 if self.level < len(os.listdir("assets/maps")) - 1:
@@ -111,4 +110,5 @@ class Game:
             pygame.display.update()
             self.clock.tick(60)
 
-Game().run()
+if __name__ == "__main__":
+    Game().run()
