@@ -17,6 +17,9 @@ class Game:
         
         self.movement = [False, False]
 
+        self.main_font = pygame.font.Font("assets/fonts/PermanentMarker-Regular.ttf", 80)
+        self.secondary_font = pygame.font.Font("assets/fonts/Schoolbell-Regular.ttf", 40)
+
         self.imgs = {
             "dirt": images("tiles/dirt"),
             "flowers": images("tiles/decor/flowers"),
@@ -44,6 +47,13 @@ class Game:
         self.offset = [0, 0]
         self.dead = False
         self.finish = False
+    
+    def pause(self):
+        pause_overlay = pygame.Surface(self.display.get_size())
+        pause_overlay.fill((0,0,0))
+        pause_overlay.set_alpha(200)
+
+        bgr = pygame.transform.scale(image("background/bgr_menu.png"), self.display.get_size())
     
     def run(self):
         self.running = True
