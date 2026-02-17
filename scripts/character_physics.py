@@ -67,7 +67,18 @@ class Physics:
         self.animation.update()
         
     def render(self, surface, offset=(0, 0)):
-        surface.blit(pygame.transform.flip(self.animation.current_image(), self.flip, False), 
+        image = pygame.transform.flip(self.animation.current_image(), self.flip, False)
+    
+        if self.enter_finish:
+            scaled_width = image.get_width() * self.scale
+            scaled_height = image.get_height() * self.scale
+            scaled = pygame.transform.scale(image, (scaled_width, scaled_height))
+
+            surface.blit(scaled, (self.position[0] - offset[0],
+                                    self.position[1] - offset[1]))
+
+        else:
+            surface.blit(image, 
                      (self.position[0] - offset[0], 
                       self.position[1] - offset[1]))
         
@@ -77,7 +88,29 @@ class Player(Physics):
         self.air_time = 0
         self.jumps = 1
 
+        self.enter_finish = False
+        self.finish_center = None
+        self.scale = 1
+        self.finish_animation_done = False
+
     def update(self, tilemap, movement=(0, 0)):
+        if self.enter_finish:
+            character_center_x = self.position[0] + self.character_size[0] // 2
+            character_center_y = self.position[1] + self.character_size[1] // 2
+            self.position[0] += (self.finish_center[0] - character_center_x) * 0.05
+            self.position[1] += (self.finish_center[1] - character_center_y) * 0.05
+            
+            if not self.finish_animation_done:
+                if self.scale > 0:
+                    self.scale -= 0.02
+                else:
+                    self.finish_animation_done = True
+                    self.game.finish = True
+                    self.enter_finish = False
+                    self.scale = 1
+                    self.finish_animation_done = False
+            return
+            
         super().update(tilemap, movement)
         
         if self.collisions["down"]:
@@ -106,8 +139,12 @@ class Player(Physics):
                            self.character_size[0], 
                            self.character_size[1])
         for rect in tilemap.finish_tile():
-            if character_rect.colliderect(rect): 
-                self.game.finish = True
+            if character_rect.colliderect(rect) and not self.enter_finish:
+                self.enter_finish = True
+                self.finish_center = rect.center
+
+                self.game.transition = True
+                self.game.transition_newmap = False
 
     def jump(self):
         if self.air_time < 4:

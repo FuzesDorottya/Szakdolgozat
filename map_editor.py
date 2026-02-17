@@ -27,7 +27,7 @@ class Editor:
         self.tilemap = Tilemap(self)
         
         try:
-            self.tilemap.load("assets/maps/10.json")
+            self.tilemap.load("assets/maps/0.json")
         except FileNotFoundError:
             pass
         
@@ -119,7 +119,7 @@ class Editor:
                     if event.key == pygame.K_g:
                         self.ongrid = not self.ongrid
                     if event.key == pygame.K_s:
-                        self.tilemap.save("assets/maps/10.json")
+                        self.tilemap.save("assets/maps/0.json")
                     if event.key == pygame.K_1:
                         self.type = 0
                         self.variant = 0

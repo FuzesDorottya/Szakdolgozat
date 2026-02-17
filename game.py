@@ -1,5 +1,6 @@
 import pygame
 import os
+import math
 
 from scripts.utilities import image, images, Animation
 from scripts.tilemap import Tilemap
@@ -48,9 +49,14 @@ class Game:
         self.tilemap.load(f"assets/maps/{map}.json")
         self.player.position = self.tilemap.get_player_spawn()
         self.player.air_time = 0
+
         self.offset = [0, 0]
         self.dead = False
         self.finish = False
+
+        self.transition_step = 50
+        self.transition = True
+        self.transition_newmap = True
     
     def pause_buttons(self):
         button_names = ["resume", "options", "controls", "return to main menu"]
@@ -112,14 +118,25 @@ class Game:
                                         return "menu"
 
             if not self.paused:
-
                 if self.finish:
                     if self.level < len(os.listdir("assets/maps")) - 1:
                         self.level += 1
                         self.load_map(self.level)
                     else:
                         return "levels"
-            
+                
+                if self.transition:
+                    if self.transition_newmap:
+                        self.transition_step -= 1
+                        if self.transition_step <= 0:
+                            self.transition_step = 0
+                            self.transition = False
+                    else:
+                        self.transition_step += 1
+                        if self.transition_step >= 50:
+                            self.transition_step = 50
+                            self.transition = False
+                    
                 if self.dead:
                     self.load_map(self.level)
             
@@ -146,6 +163,8 @@ class Game:
                     self.player.update(self.tilemap, 
                                     (self.movement[1] - self.movement[0], 0))
                     
+                
+                    
             self.display.blit(bgr, (0, 0))
             render_offset = (int(self.offset[0]), int(self.offset[1]))
 
@@ -155,6 +174,19 @@ class Game:
             
             if not self.dead:
                 self.player.render(self.display, render_offset)
+            
+            if self.transition_step:
+                center_x = self.display.get_width() // 2
+                center_y = self.display.get_height() // 2
+                c_radius = math.sqrt(center_x**2 + center_y**2)
+
+                transition_surface = pygame.Surface(self.display.get_size())
+                transition_surface.fill((10, 10, 50))
+                pygame.draw.circle(transition_surface, (0, 0, 0), 
+                                   (self.display.get_width() // 2, self.display.get_height() // 2),
+                                   ((50 - abs(self.transition_step)) / 50) * c_radius)
+                transition_surface.set_colorkey((0, 0, 0))
+                self.display.blit(transition_surface, (0, 0))
             
             self.screen.blit(pygame.transform.scale(self.display, self.screen.get_size()), (0, 0))
 
