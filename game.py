@@ -58,6 +58,8 @@ class Game:
         self.level = start_level
         self.load_map(self.level)
 
+        self.path = None ##
+
     def load_map(self, map):
         self.tilemap.load(f"assets/maps/{map}.json")
         self.player.position = self.tilemap.get_player_spawn()
@@ -71,13 +73,21 @@ class Game:
         self.transition = True
         self.transition_newmap = True
 
-        self.pathfinding = Pathfinding(self.tilemap)
-        self.debug_nodes = self.pathfinding.debug_nodes()
+        self.pathfinding = Pathfinding(self.tilemap) ##
+        self.debug_nodes = self.pathfinding.debug_nodes() ##
 
-    def render_debug_nodes(self, offset = (0,0)):
+    def render_debug_nodes(self, offset = (0,0)): ##
         mx, my = pygame.mouse.get_pos()
         scale_x = self.screen.get_width() / self.display.get_width()
         scale_y = self.screen.get_height() / self.display.get_height()
+
+        character_rect = pygame.Rect(self.player.position[0], 
+                                            self.player.position[1], 
+                                            self.player.character_size[0], 
+                                            self.player.character_size[1])
+
+        player_node = self.pathfinding.player_current_node(character_rect)
+        finish_node = self.pathfinding.finish_node()
         
         if scale_x == 0 or scale_y == 0: return 
 
@@ -106,7 +116,11 @@ class Game:
             screen_px = px - offset[0]
             screen_py = py - offset[1]
             
-            if node == closest_node:
+            if node == player_node:
+                color = (0, 255, 255)
+            elif node == finish_node:
+                color = (100, 100, 100)
+            elif node == closest_node:
                 color = (255, 255, 0)
             else:
                 color = (255, 0, 0) 
@@ -179,6 +193,21 @@ class Game:
                         self.movement[0] = False
                         self.movement[1] = False 
                         self.paused = not self.paused
+                    if event.key == pygame.K_p: ##
+                        character_rect = pygame.Rect(self.player.position[0], 
+                                            self.player.position[1], 
+                                            self.player.character_size[0], 
+                                            self.player.character_size[1])
+
+                        start = self.pathfinding.player_current_node(character_rect)
+                        goal = self.pathfinding.finish_node()
+
+                        print("START:", start)
+                        print("GOAL:", goal)
+                                            
+                        if start and goal:
+                            self.path = self.pathfinding.astar_pathfinding(start,goal)
+                            print("PATH:", self.path)
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_a:
                         self.movement[0] = False
@@ -256,7 +285,20 @@ class Game:
             self.clouds_close.render(self.display, render_offset)
             self.tilemap.render(self.display, render_offset)
             
-            self.render_debug_nodes(render_offset)
+            self.render_debug_nodes(render_offset) ##
+            if self.path: ##
+                for node in self.path:
+                    x, y = node
+
+                    px = (x * self.tilemap.tile_size + self.tilemap.tile_size // 2) - render_offset[0]
+                    py = (y * self.tilemap.tile_size + self.tilemap.tile_size // 2) - render_offset[1]
+
+                    pygame.draw.circle(
+                        self.display,
+                        (255, 255, 255),
+                        (px, py),
+                        3
+                    )
             
             if not self.dead:
                 self.player.render(self.display, render_offset)
