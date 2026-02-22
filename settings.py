@@ -49,7 +49,8 @@ class Settings:
         self.buttons.append(save_button)
     
     def setting_text(self):
-        settings_texts = ["menu music\nvolume", "game music\nvolume"]
+        self.settings_text = []
+        settings_texts = [f"menu music\n{round(self.main.menu_volume * 100)}%", f"game music\n{round(self.main.game_volume * 100)}%"]
 
         for i in range(len(settings_texts)):
             left_button = self.buttons[i * 2]
@@ -73,7 +74,6 @@ class Settings:
 
     def run(self):
         bgr = pygame.transform.scale(image("background/bgr_menu.png"), self.display.get_size())
-
         settings_text = self.main_font.render("settings", True, (65, 65, 65))
         settings_text_rect = settings_text.get_rect(center=(self.display.get_width() / 2, 100))
        
@@ -106,6 +106,8 @@ class Settings:
                                     return self.return_to
                                 elif self.buttons[i].text == "save":
                                     return "save"
+                                
+                                self.setting_text()
                                 
                                 current_music = self.main.current_music
                                 if "menu" in current_music:
