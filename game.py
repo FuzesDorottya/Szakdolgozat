@@ -57,12 +57,13 @@ class Game:
         self.clouds_far = Clouds(image("clouds/1.png"), type = 1, count=3)
         self.tilemap = Tilemap(self)
         self.player = Player(self, (0,0), (10, 11))
+        self.pathfinding = Pathfinding(self.tilemap)
         self.ai = Ai(self, (0,0), (10, 11))
 
         self.level = start_level
         self.load_map(self.level)
 
-        self.path = None ##
+        self.path = None
         self.ai_on = False
         self.nodes = []
 
@@ -78,79 +79,6 @@ class Game:
         self.transition_step = 50
         self.transition = True
         self.transition_newmap = True
-
-        self.pathfinding = Pathfinding(self.tilemap) ##
-        self.debug_nodes = self.pathfinding.debug_nodes() ##
-
-    def render_debug_nodes(self, offset = (0,0)): ##
-        mx, my = pygame.mouse.get_pos()
-        scale_x = self.screen.get_width() / self.display.get_width()
-        scale_y = self.screen.get_height() / self.display.get_height()
-
-        character_rect = pygame.Rect(self.player.position[0], 
-                                            self.player.position[1], 
-                                            self.player.character_size[0], 
-                                            self.player.character_size[1])
-
-        player_node = self.pathfinding.player_current_node(character_rect)
-        finish_node = self.pathfinding.finish_node()
-        
-        if scale_x == 0 or scale_y == 0: return 
-
-        world_mx = mx / scale_x + offset[0]
-        world_my = my / scale_y + offset[1]
-
-        closest_node = None
-        min_dist = 1000
-        tile_size = self.tilemap.tile_size
-        
-        for node in self.debug_nodes:
-            px = node[0] * tile_size + tile_size // 2
-            py = node[1] * tile_size + tile_size // 2
-            
-            dist = ((world_mx - px)**2 + (world_my - py)**2)**0.5
-            
-            if dist < 30: 
-                if dist < min_dist:
-                    min_dist = dist
-                    closest_node = node
-
-        for node in self.debug_nodes:
-            px = node[0] * tile_size + tile_size // 2
-            py = node[1] * tile_size + tile_size // 2
-
-            screen_px = px - offset[0]
-            screen_py = py - offset[1]
-            
-            if node == player_node:
-                color = (0, 255, 255)
-            elif node == finish_node:
-                color = (100, 100, 100)
-            elif node == closest_node:
-                color = (255, 255, 0)
-            else:
-                color = (255, 0, 0) 
-
-            pygame.draw.circle(self.display, color, (screen_px, screen_py), 2)
-
-        if closest_node:
-            cx, cy = closest_node
-            start_pix = ((cx * tile_size + tile_size // 2) - offset[0], (cy * tile_size + tile_size // 2) - offset[1])
-
-            def draw_links(neighbors, color):
-                for n in neighbors:
-                    end_pix = ((n[0] * tile_size + tile_size // 2) - offset[0], (n[1] * tile_size + tile_size // 2) - offset[1])
-                    pygame.draw.line(self.display, color, start_pix, end_pix, 1)
-
-            
-            walks = self.pathfinding.walkable_neighbour_nodes((cx, cy))
-            drops = self.pathfinding.drop_neighbour_nodes((cx, cy))
-            jumps = self.pathfinding.jump_neighbour_nodes((cx, cy))
-
-            
-            draw_links(jumps, (255, 0, 255))
-            draw_links(drops, (0, 100, 255))
-            draw_links(walks, (0, 255, 0))
     
     def pause_buttons(self):
         button_names = ["resume", "settings", "controls", "return to main menu"]
@@ -199,7 +127,7 @@ class Game:
                         self.movement[0] = False
                         self.movement[1] = False 
                         self.paused = not self.paused
-                    if event.key == pygame.K_p: ##
+                    if event.key == pygame.K_h:
                         self.ai_on = True
                         character_rect = pygame.Rect(self.player.position[0], 
                                             self.player.position[1], 
@@ -209,7 +137,6 @@ class Game:
                         start = self.nodes.pop()
                         self.nodes.clear()
                         self.nodes.append(start)
-                        print(self.nodes)
                         goal = self.pathfinding.finish_node()
 
                         self.ai.position = [start[0] * self.tilemap.tile_size, (start[1] + 1) * self.tilemap.tile_size - self.ai.character_size[1]]
@@ -298,10 +225,8 @@ class Game:
                 if current_node:
                     if current_node not in self.nodes: 
                         self.nodes.append(current_node)
-                        print(self.nodes)
                     elif current_node != self.nodes[len(self.nodes) - 1]:
                         self.nodes.append(current_node)
-                        print(self.nodes)
                 
                 ai_rect = pygame.Rect(self.ai.position[0], 
                                                 self.ai.position[1], 
@@ -320,21 +245,6 @@ class Game:
             self.clouds_close.render(self.display, render_offset)
             self.tilemap.render(self.display, render_offset)
             
-            self.render_debug_nodes(render_offset) ##
-            if self.path: ##
-                
-                for (node, action) in self.path:
-                    x, y = node
-
-                    px = (x * self.tilemap.tile_size + self.tilemap.tile_size // 2) - render_offset[0]
-                    py = (y * self.tilemap.tile_size + self.tilemap.tile_size // 2) - render_offset[1]
-
-                    pygame.draw.circle(
-                        self.display,
-                        (255, 255, 255),
-                        (px, py),
-                        3
-                    )
             if self.ai_on:
                 self.ai.render(self.display, render_offset)
             if not self.dead:

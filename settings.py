@@ -105,15 +105,14 @@ class Settings:
                                 elif self.buttons[i].text == "back":
                                     return self.return_to
                                 elif self.buttons[i].text == "save":
+                                    current_music = self.main.current_music
+                                    if "menu" in current_music:
+                                        pygame.mixer.music.set_volume(self.main.menu_volume)
+                                    elif "game" in current_music:
+                                        pygame.mixer.music.set_volume(self.main.game_volume)
                                     return "save"
                                 
                                 self.setting_text()
-                                
-                                current_music = self.main.current_music
-                                if "menu" in current_music:
-                                    pygame.mixer.music.set_volume(self.main.menu_volume)
-                                elif "game" in current_music:
-                                    pygame.mixer.music.set_volume(self.main.game_volume)
             
             self.screen.blit(pygame.transform.scale(self.display, self.screen.get_size()), (0,0))
             pygame.display.update()
