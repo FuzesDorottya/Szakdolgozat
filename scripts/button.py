@@ -27,8 +27,7 @@ class Button:
         self.text_surface = self.font.render(self.text, True, self.text_color)
         self.text_rect = self.text_surface.get_rect(center=self.rect.center)
 
-    def draw(self, surface):
-        mouse_pos = pygame.mouse.get_pos()
+    def draw(self, surface, mouse_pos):
         if self.rect.collidepoint(mouse_pos):
             current_color = self.hover_color 
         else: 

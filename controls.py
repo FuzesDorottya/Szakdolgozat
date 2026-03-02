@@ -9,12 +9,19 @@ class Controls:
         self.screen = screen
         self.return_to = return_to
         self.screen_size = self.screen.get_size()
-        self.display = pygame.Surface((self.screen_size[0], self.screen_size[1]))
+        width = 1920
+        height = 1080
+        self.display = pygame.Surface((width, height))
+        self.scale = min(self.screen_size[0] / width, self.screen_size[1] / height)
+        self.new_height = int(height * self.scale)
+        self.new_width = int(width * self.scale)
+        self.offset_x = (self.screen_size[0] - self.new_width) // 2
+        self.offset_y = (self.screen_size[1] - self.new_height) // 2
         self.clock = pygame.time.Clock()
 
-        self.main_font = pygame.font.Font("assets/fonts/PermanentMarker-Regular.ttf", 80)
-        self.secondary_font = pygame.font.Font("assets/fonts/Schoolbell-Regular.ttf", 50)
-        self.back_font = pygame.font.Font("assets/fonts/PermanentMarker-Regular.ttf", 45)
+        self.main_font = pygame.font.Font("assets/fonts/PermanentMarker-Regular.ttf", width // 30)
+        self.secondary_font = pygame.font.Font("assets/fonts/Schoolbell-Regular.ttf", width // 40)
+        self.back_font = pygame.font.Font("assets/fonts/PermanentMarker-Regular.ttf", width // 45)
         self.buttons = []
         self.buttons_rect()
         self.control_texts = []
@@ -43,9 +50,9 @@ class Controls:
             self.display.blit(bgr, (0, 0))
             self.display.blit(controls_text, controls_text_rect)
             mouse_pos = pygame.mouse.get_pos()
-
+            self.scales_mouse_pos = ((mouse_pos[0] - self.offset_x) / self.scale, (mouse_pos[1] - self.offset_y) / self.scale)
             for button in self.buttons:
-                button.draw(self.display)
+                button.draw(self.display, self.scales_mouse_pos)
 
             for text_surface, text_rect in self.control_texts:
                 self.display.blit(text_surface, text_rect)
@@ -55,10 +62,11 @@ class Controls:
                     if event.button == 1:
                         for button in self.buttons:
                             button.sound(event)
-                            if button.rect.collidepoint(mouse_pos):
+                            if button.rect.collidepoint(self.scales_mouse_pos):
                                 return self.return_to
             
-            self.screen.blit(pygame.transform.scale(self.display, self.screen.get_size()), (0,0))
+            self.screen.fill((0,0,0))
+            self.screen.blit(pygame.transform.scale(self.display, (self.new_width, self.new_height)), (self.offset_x, self.offset_y))
             pygame.display.update()
             self.clock.tick(60)
 

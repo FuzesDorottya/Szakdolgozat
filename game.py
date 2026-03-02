@@ -15,17 +15,26 @@ class Game:
         pygame.init()
         self.screen = screen
         self.screen_size = self.screen.get_size()
-        self.display = pygame.Surface((self.screen_size[0]//6, self.screen_size[1]//6))
+        width = 1920
+        height = 1080
+        self.pause_display = pygame.Surface((width, height))
+        self.display = pygame.Surface((width//6, height//6))
+        self.scale = min(self.screen_size[0] / width, self.screen_size[1] / height)
+        self.new_height = int(height * self.scale)
+        self.new_width = int(width * self.scale)
+        self.offset_x = (self.screen_size[0] - self.new_width) // 2
+        self.offset_y = (self.screen_size[1] - self.new_height) // 2
         self.clock = pygame.time.Clock()
         
         self.movement = [False, False]
 
-        self.main_font = pygame.font.Font("assets/fonts/PermanentMarker-Regular.ttf", 80)
-        self.button_font = pygame.font.Font("assets/fonts/PermanentMarker-Regular.ttf", 50)
+        self.main_font = pygame.font.Font("assets/fonts/PermanentMarker-Regular.ttf", width // 30)
+        self.button_font = pygame.font.Font("assets/fonts/PermanentMarker-Regular.ttf", width // 40)
         
         self.paused = False
         self.buttons = []
         self.pause_buttons()
+        self.pause_bgr = pygame.transform.scale(image("background/bgr_menu.png"), self.pause_display.get_size())
 
         self.imgs = {
             "dirt": images("tiles/dirt"),
@@ -82,13 +91,13 @@ class Game:
     
     def pause_buttons(self):
         button_names = ["resume", "settings", "controls", "return to main menu"]
-        center_y = self.screen.get_height() / 2 - 75
+        center_y = self.pause_display.get_height() / 2 - 75
         y_offset = 150
 
         for i in range(len(button_names)):
             name = button_names[i]
             button_rect = pygame.Rect(0, 0, 550, 100)
-            button_rect.centerx = self.screen.get_width() / 2
+            button_rect.centerx = self.pause_display.get_width() / 2
             button_rect.centery = center_y + i * y_offset
 
             button = Button(button_rect, name, self.button_font, border_radius=150)
@@ -100,21 +109,24 @@ class Game:
         self.finish_sfx.stop()
         self.jump.stop()
         self.walk.stop()
-        bgr = pygame.transform.scale(image("background/bgr_menu.png"), self.screen_size)
-        bgr.set_alpha(100)
 
         pause_text = self.main_font.render("paused", True, (65,65,65))
-        pause_text_rect = pause_text.get_rect(center=(self.screen.get_width() / 2, 100))
-        self.screen.blit(bgr, (0,0))
-        self.screen.blit(pause_text, pause_text_rect) 
+        pause_text_rect = pause_text.get_rect(center=(self.pause_display.get_width() / 2, 100))
+        self.pause_display.blit(self.pause_bgr, (0,0))
+        self.pause_display.blit(pause_text, pause_text_rect) 
 
         for button in self.buttons:
-            button.draw(self.screen)
+            button.draw(self.pause_display, self.scaled_mouse_pos)
+
+        self.screen.fill((0,0,0))
+        self.screen.blit(pygame.transform.scale(self.pause_display, (self.new_width, self.new_height)), (self.offset_x, self.offset_y))
     
     def run(self):
         bgr = pygame.transform.scale(image("background/bgr_game.png"), self.display.get_size())
 
         while True:
+            mouse_pos = pygame.mouse.get_pos()
+            self.scaled_mouse_pos = ((mouse_pos[0] - self.offset_x) / self.scale, (mouse_pos[1] - self.offset_y) / self.scale)
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_a:
@@ -157,11 +169,10 @@ class Game:
                         self.movement[1] = False
                 if self.paused:
                     if event.type == pygame.MOUSEBUTTONDOWN:
-                        mouse_pos = pygame.mouse.get_pos()
                         if event.button == 1:
                             for button in self.buttons:
                                 button.sound(event)
-                                if button.rect.collidepoint(mouse_pos):
+                                if button.rect.collidepoint(self.scaled_mouse_pos):
                                     if button.text == "resume":
                                         self.paused = False
                                     if button.text == "return to main menu":
@@ -263,7 +274,8 @@ class Game:
                 transition_surface.set_colorkey((0, 0, 0))
                 self.display.blit(transition_surface, (0, 0))
             
-            self.screen.blit(pygame.transform.scale(self.display, self.screen.get_size()), (0, 0))
+            self.screen.fill((0,0,0))
+            self.screen.blit(pygame.transform.scale(self.display, (self.new_width, self.new_height)), (self.offset_x, self.offset_y))
 
             if self.paused:
                 self.pause()
