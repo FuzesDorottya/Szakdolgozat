@@ -235,7 +235,7 @@ class Game:
                 for rect in self.tilemap.finish_tile():
                     if ai_rect.colliderect(rect):
                         self.ai_on = False
-                if self.ai_on:
+                if self.ai_on and self.path:
                     self.ai.update(self.tilemap)
                     
             self.display.blit(bgr, (0, 0))
@@ -245,7 +245,7 @@ class Game:
             self.clouds_close.render(self.display, render_offset)
             self.tilemap.render(self.display, render_offset)
             
-            if self.ai_on:
+            if self.ai_on and self.path:
                 self.ai.render(self.display, render_offset)
             if not self.dead:
                 self.player.render(self.display, render_offset)
