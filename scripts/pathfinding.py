@@ -82,22 +82,11 @@ class Pathfinding:
             neighbours.append((nodes, "jump"))
         return neighbours
 
-    def debug_nodes(self):
-        nodes = []
-        for loc in self.tilemap.tilemap:
-            tile = self.tilemap.tilemap[loc]
-            if tile['type'] == "dirt":
-                x, y = tile['position']
-                if self.is_node((x, y-1)):
-                    nodes.append((x, y-1))
-        return nodes
-
     def player_current_node(self, player_rect):
         player_x = int(player_rect.centerx // self.tilemap.tile_size)
         player_y = int((player_rect.bottom - 1) // self.tilemap.tile_size)
-        for y in range(self.max_fall):
-            if self.is_node((player_x,player_y + y)):
-                return ((player_x,player_y + y))
+        if self.is_node((player_x,player_y)):
+            return ((player_x,player_y))
         return None
         
     def finish_node(self):

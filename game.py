@@ -74,7 +74,7 @@ class Game:
 
         self.path = None
         self.ai_on = False
-        self.nodes = []
+        self.last_node = None
 
     def load_map(self, map):
         self.tilemap.load(f"assets/maps/{map}.json")
@@ -141,27 +141,18 @@ class Game:
                         self.paused = not self.paused
                     if event.key == pygame.K_h:
                         self.ai_on = True
-                        character_rect = pygame.Rect(self.player.position[0], 
-                                            self.player.position[1], 
-                                            self.player.character_size[0], 
-                                            self.player.character_size[1])
 
-                        start = self.nodes.pop()
-                        self.nodes.clear()
-                        self.nodes.append(start)
+                        start = self.last_node
                         goal = self.pathfinding.finish_node()
 
                         self.ai.position = [start[0] * self.tilemap.tile_size, (start[1] + 1) * self.tilemap.tile_size - self.ai.character_size[1]]
                         self.ai.velocity = [0,0]
                         self.ai.collisions["down"] = True
-                        self.ai.path = []
                         self.ai.air_time = 0
                         self.ai.jump_target = None
                                             
                         if start and goal:
                             self.path = self.pathfinding.astar_pathfinding(start,goal)
-                            if self.path:
-                                self.ai.calculate_path(goal)
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_a:
                         self.movement[0] = False
@@ -205,7 +196,6 @@ class Game:
                             self.transition = False
                     
                 if self.dead:
-                    self.nodes.clear()
                     self.load_map(self.level)
             
                 character_rect = pygame.Rect(self.player.position[0], 
@@ -234,10 +224,7 @@ class Game:
 
                 current_node = self.pathfinding.player_current_node(character_rect)
                 if current_node:
-                    if current_node not in self.nodes: 
-                        self.nodes.append(current_node)
-                    elif current_node != self.nodes[len(self.nodes) - 1]:
-                        self.nodes.append(current_node)
+                        self.last_node = current_node
                 
                 ai_rect = pygame.Rect(self.ai.position[0], 
                                                 self.ai.position[1], 

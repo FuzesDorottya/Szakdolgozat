@@ -170,14 +170,13 @@ class Player(Physics):
 class Ai(Physics):
     def __init__(self, game, position, character_size):
         super().__init__(game, "ai", position, character_size)
-        self.path = []
         self.enter_finish = False
         self.jump_target = None
 
     def update(self, tilemap):
         movement = [0,0]
-        if self.path:
-            target_node, action = self.path[0]
+        if self.game.path:
+            target_node, action = self.game.path[0]
             target_x = target_node[0] * tilemap.tile_size + tilemap.tile_size // 2
             character_x = self.position[0] + (self.character_size[0] + 1) // 2
             
@@ -213,18 +212,7 @@ class Ai(Physics):
                 self.current_action("idle")
             
             if dist_x < 4 and dist_y < 2 and self.collisions["down"]:
-                self.path.pop(0)
+                self.game.path.pop(0)
 
         super().update(tilemap, movement)
-    
-    def calculate_path(self, goal):
-        character_rect = pygame.Rect(self.position[0], 
-                           self.position[1], 
-                           self.character_size[0], 
-                           self.character_size[1])
-        player_node = self.game.pathfinding.player_current_node(character_rect)
-        if player_node:
-            path = self.game.pathfinding.astar_pathfinding(player_node, goal)
-            if path:
-                self.path = path
    
