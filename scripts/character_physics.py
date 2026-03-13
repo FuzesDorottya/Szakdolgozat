@@ -172,11 +172,12 @@ class Ai(Physics):
         super().__init__(game, "ai", position, character_size)
         self.enter_finish = False
         self.jump_target = None
+        self.path_index = 0
 
     def update(self, tilemap):
         movement = [0,0]
         if self.game.path:
-            target_node, action = self.game.path[0]
+            target_node, action = self.game.path[self.path_index]
             target_x = target_node[0] * tilemap.tile_size + tilemap.tile_size // 2
             character_x = self.position[0] + (self.character_size[0] + 1) // 2
             
@@ -212,7 +213,7 @@ class Ai(Physics):
                 self.current_action("idle")
             
             if dist_x < 4 and dist_y < 2 and self.collisions["down"]:
-                self.game.path.pop(0)
+                self.path_index += 1
 
         super().update(tilemap, movement)
    

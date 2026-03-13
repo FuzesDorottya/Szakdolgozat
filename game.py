@@ -150,6 +150,7 @@ class Game:
                         self.ai.collisions["down"] = True
                         self.ai.air_time = 0
                         self.ai.jump_target = None
+                        self.ai.path_index = 0
                                             
                         if start and goal:
                             self.path = self.pathfinding.astar_pathfinding(start,goal)
