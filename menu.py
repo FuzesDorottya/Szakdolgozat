@@ -20,6 +20,7 @@ class Menu:
         
         self.main_font = pygame.font.Font("assets/fonts/PermanentMarker-Regular.ttf", width // 30)
         self.secondary_font = pygame.font.Font("assets/fonts/Schoolbell-Regular.ttf", width // 40)
+        self.title_font = pygame.font.Font("assets/fonts/PermanentMarker-Regular.ttf", width // 10)
         
         self.confirm = False
         self.confirm_buttons = []
@@ -80,6 +81,11 @@ class Menu:
     def run(self):
         bgr = pygame.transform.scale(image("background/bgr_game.png"), self.display.get_size())
 
+        levels_text = self.title_font.render("slimy", True, (35, 175, 75))
+        levels_text_rect = levels_text.get_rect(center=(self.display.get_width() / 2, 200))
+        levels_text_bg = self.title_font.render("slimy", True, (65,65,65))
+        levels_text_rect_bg = levels_text_bg.get_rect(center=(self.display.get_width() / 2 + 10, 200))
+
         while True:
             mouse_pos = pygame.mouse.get_pos()
             self.scales_mouse_pos = ((mouse_pos[0] - self.offset_x) / self.scale, (mouse_pos[1] - self.offset_y) / self.scale)
@@ -109,6 +115,8 @@ class Menu:
                 
             
             self.display.blit(bgr, (0, 0))
+            self.display.blit(levels_text_bg, levels_text_rect_bg)
+            self.display.blit(levels_text, levels_text_rect)
 
             for button in self.buttons:
                 button.draw(self.display, self.scales_mouse_pos)
