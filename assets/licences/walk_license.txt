@@ -1,0 +1,5 @@
+Sound: walk.wav
+Author: Blender Foundation
+Source: sfx_step_grass_l and sfx_step_grass_r, https://opengameart.org/content/grass-foot-step-sounds-yo-frankie
+License: CC BY 3.0, https://creativecommons.org/licenses/by/3.0/
+Modified: Yes (combined the two sounds)

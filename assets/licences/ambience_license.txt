@@ -1,0 +1,5 @@
+Sound: ambience.wav
+Author: Blender Foundation
+Source: amb_forest, https://opengameart.org/content/ambient-mountain-river-wind-and-forest-and-waterfall
+License: CC BY 3.0, https://creativecommons.org/licenses/by/3.0/
+Modified: Yes (edited for better loop)
