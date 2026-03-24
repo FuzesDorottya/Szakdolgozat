@@ -195,11 +195,6 @@ class Ai(Physics):
                         self.velocity[1] = -4.5
                         self.jump_target = target_node
 
-            if action == "drop":
-                if character_x < target_x:
-                    movement[0] = 1
-                else: movement[0] = -1 
-
             if self.collisions["down"]:
                 self.air_time = 0
             else:

@@ -81,7 +81,7 @@ class Menu:
     def run(self):
         bgr = pygame.transform.scale(image("background/bgr_game.png"), self.display.get_size())
 
-        levels_text = self.title_font.render("slimy", True, (35, 175, 75))
+        levels_text = self.title_font.render("slimy", True, (35, 180, 75))
         levels_text_rect = levels_text.get_rect(center=(self.display.get_width() / 2, 200))
         levels_text_bg = self.title_font.render("slimy", True, (65,65,65))
         levels_text_rect_bg = levels_text_bg.get_rect(center=(self.display.get_width() / 2 + 10, 200))

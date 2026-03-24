@@ -29,7 +29,17 @@ class Main:
             else: pygame.mixer.music.set_volume(self.game_volume)
             pygame.mixer.music.play(-1)
             self.current_music = path
-    
+
+    def change_volume(self, name, volume):
+        if name == "menu":
+            self.menu_volume = volume
+            if "menu" in self.current_music:
+                pygame.mixer.music.set_volume(self.menu_volume)
+        elif name == "game":
+            self.game_volume = volume
+            if "game" in self.current_music:
+                pygame.mixer.music.set_volume(self.game_volume)
+
     def save(self):
         file = open("settings.json", "w")
         json.dump({"menu_volume": self.menu_volume, "game_volume": self.game_volume}, file)

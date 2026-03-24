@@ -21,6 +21,9 @@ class Settings:
         self.offset_y = (self.screen_size[1] - self.new_height) // 2
         self.clock = pygame.time.Clock()
 
+        self.game_volume = self.main.game_volume
+        self.menu_volume = self.main.menu_volume
+        
         self.back_save_font = pygame.font.Font("assets/fonts/PermanentMarker-Regular.ttf", width // 45)
         self.secondary_font = pygame.font.Font("assets/fonts/Schoolbell-Regular.ttf", width // 40)
         self.main_font = pygame.font.Font("assets/fonts/PermanentMarker-Regular.ttf", width // 30)
@@ -57,7 +60,7 @@ class Settings:
     
     def setting_text(self):
         self.settings_text = []
-        settings_texts = [f"menu music\n{round(self.main.menu_volume * 100)}%", f"game music\n{round(self.main.game_volume * 100)}%"]
+        settings_texts = [f"menu music\n{round(self.menu_volume * 100)}%", f"game music\n{round(self.game_volume * 100)}%"]
 
         for i in range(len(settings_texts)):
             left_button = self.buttons[i * 2]
@@ -102,21 +105,18 @@ class Settings:
                             self.buttons[i].sound(event)
                             if self.buttons[i].rect.collidepoint(self.scales_mouse_pos):
                                 if i == 0:
-                                    self.main.menu_volume = max(0, self.main.menu_volume - 0.05)
+                                    self.menu_volume = max(0, self.menu_volume - 0.05)
                                 elif i == 1:
-                                    self.main.menu_volume = min(1.0, self.main.menu_volume + 0.05)
+                                    self.menu_volume = min(1.0, self.menu_volume + 0.05)
                                 elif i == 2:
-                                    self.main.game_volume = max(0, self.main.game_volume - 0.05)
+                                    self.game_volume = max(0, self.game_volume - 0.05)
                                 elif i == 3:
-                                    self.main.game_volume = min(1.0, self.main.game_volume + 0.05)
+                                    self.game_volume = min(1.0, self.game_volume + 0.05)
                                 elif self.buttons[i].text == "back":
                                     return self.return_to
                                 elif self.buttons[i].text == "save":
-                                    current_music = self.main.current_music
-                                    if "menu" in current_music:
-                                        pygame.mixer.music.set_volume(self.main.menu_volume)
-                                    elif "game" in current_music:
-                                        pygame.mixer.music.set_volume(self.main.game_volume)
+                                    self.main.change_volume("menu", self.menu_volume)
+                                    self.main.change_volume("game", self.game_volume)
                                     return "save"
                                 
                                 self.setting_text()
