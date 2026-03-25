@@ -29,7 +29,7 @@ class Levels:
         for level in range(len(os.listdir("assets/maps"))):
             gap = 40
             button_size = 100
-            columns = 5
+            columns = 4
             grid_width = (columns * button_size) + ((columns - 1) * gap)
             start_x = (self.display.get_width() - grid_width) / 2
             start_y = 250

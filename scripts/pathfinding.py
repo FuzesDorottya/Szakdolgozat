@@ -54,7 +54,7 @@ class Pathfinding:
         return neighbours
     
     def is_path_clear(self, start_position, goal_position, jump_height):
-        max_height = min(start_position[1], goal_position[1]) - jump_height
+        max_height = start_position[1] - jump_height
         
         if goal_position[0] > start_position[0]:
             direction = 1
