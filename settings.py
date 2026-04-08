@@ -105,11 +105,11 @@ class Settings:
                             self.buttons[i].sound(event)
                             if self.buttons[i].rect.collidepoint(self.scales_mouse_pos):
                                 if i == 0:
-                                    self.menu_volume = max(0, self.menu_volume - 0.05)
+                                    self.menu_volume = max(0.0, self.menu_volume - 0.05)
                                 elif i == 1:
                                     self.menu_volume = min(1.0, self.menu_volume + 0.05)
                                 elif i == 2:
-                                    self.game_volume = max(0, self.game_volume - 0.05)
+                                    self.game_volume = max(0.0, self.game_volume - 0.05)
                                 elif i == 3:
                                     self.game_volume = min(1.0, self.game_volume + 0.05)
                                 elif self.buttons[i].text == "back":

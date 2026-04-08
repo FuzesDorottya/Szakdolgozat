@@ -91,7 +91,6 @@ class Player(Physics):
         self.enter_finish = False
         self.finish_center = None
         self.scale = 1
-        self.finish_animation_done = False
 
     def update(self, tilemap, movement=(0, 0)):
         if self.enter_finish:
@@ -100,15 +99,12 @@ class Player(Physics):
             self.position[0] += (self.finish_center[0] - character_center_x) * 0.05
             self.position[1] += (self.finish_center[1] - character_center_y) * 0.05
             
-            if not self.finish_animation_done:
-                if self.scale > 0:
-                    self.scale -= 0.02
-                else:
-                    self.finish_animation_done = True
-                    self.game.finish = True
-                    self.enter_finish = False
-                    self.scale = 1
-                    self.finish_animation_done = False
+            if self.scale > 0:
+                self.scale -= 0.02
+            else:
+                self.game.finish = True
+                self.enter_finish = False
+                self.scale = 1
             return
             
         super().update(tilemap, movement)

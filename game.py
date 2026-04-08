@@ -258,7 +258,7 @@ class Game:
                 transition_surface.fill((10, 10, 50))
                 pygame.draw.circle(transition_surface, (0, 0, 0), 
                                    (self.display.get_width() // 2, self.display.get_height() // 2),
-                                   ((50 - abs(self.transition_step)) / 50) * c_radius)
+                                   ((50 - self.transition_step) / 50) * c_radius)
                 transition_surface.set_colorkey((0, 0, 0))
                 self.display.blit(transition_surface, (0, 0))
             
